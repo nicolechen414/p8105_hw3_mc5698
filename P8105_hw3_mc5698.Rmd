@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r echo=FALSE}
 #Settings
 library(tidyverse)
+library(ggplot2)
 
 knitr::opts_chunk$set(
   fig.width = 6,
@@ -60,10 +61,75 @@ snowfall= data_ny %>%
 ```
 For snowball,the most commonly observed values is 0, which means that most days are not snowy.
 ```{r}
+#Calculate the average max temperature in January and in July in each station across years
+max_jan<- data_ny %>%
+  filter(month == "Jan") %>%
+  group_by(year) %>%
+  summarize(jan_mean_tmax = mean(tmax), .groups = 'drop')
+
+max_jul<- data_ny %>%
+  filter(month == "Jul") %>%
+  group_by(year) %>%
+  summarize(jul_mean_tmax = mean(tmax), .groups = 'drop')
+
+combined_tmax = left_join(max_jan, max_jul, by ="year" ) %>%
+  pivot_longer(
+    cols = c(jan_mean_tmax, jul_mean_tmax),  
+    names_to = "month",                     
+    values_to = "mean_tmax"                  
+  ) %>%
+  mutate(
+    month = recode(month,                
+                   jan_mean_tmax = "Jan",
+                   jul_mean_tmax = "Jul")
+  )
 
 ```
 
+```{r}
+#Make a two-panel plot showing the average max temperature in January and in July 
+ggplot(data = combined_tmax, aes(x = year, y = mean_tmax, color = month)) +
+  geom_line(alpha = 0.5) +
+  facet_wrap(~ month, ncol = 1) +
+  labs(
+    title = "Average Maximum Temperature in January and July",
+    x = "Year",
+    y = "Average Maximum Temperature (C)"
+  ) +
+  theme(legend.position = "bottom")
 
+```
+
+```{r}
+#Make a two-panel plot 
+p1 = ggplot(data_ny, aes(x = tmin, y = tmax)) +
+  geom_hex() +
+  labs(
+    title = "Plot of tmax vs tmin",
+    x = "Minimum Temperature (C)",
+    y = "Maximum Temperature (C)"
+  ) +
+  theme_minimal() 
+  
+```
+
+
+```{r}
+#Make a plot showing the distribution of snowfall values
+snowfall_data <- data_ny %>%
+  filter(snow > 0 & snow < 100) %>%
+  group_by(year) %>%
+  summarize(mean_snowfall = mean(snow, na.rm = TRUE), .groups = 'drop')
+
+p2 <- ggplot(snowfall_data, aes(x = year, y = mean_snowfall)) +
+  geom_point() + geom_line() +
+  labs(
+    title = "Distribution of Snowfall by Year",
+    x = "Year",
+    y = "Mean Snowfall (mm)"
+  ) +
+  theme_minimal()
+```
 
 
 #Problem 2
