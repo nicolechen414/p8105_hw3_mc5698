@@ -154,9 +154,46 @@ accelerometer <- accelerometer %>%
   mutate(seqn = as.character(seqn))
 
 #Merge two datasets
-merged_data =left_join(demographics, accelerometer, by = "seqn")
+merged_data =left_join(demographics, accelerometer, by = "seqn") %>%
+  janitor::clean_names() %>%
+  rename("sex" = "x1_male", "education" = "x1_less_than_high_school", "age" = "x_1") %>%
+  drop_na()
 ```
 
+```{r}
+#Produce a table for the number of men and women in each education category
+education_table = merged_data %>%
+  group_by(sex, education) %>%
+  summarize(count = n(), .groups = 'drop') %>%
+  pivot_wider(names_from = sex, values_from = count, values_fill = 0) %>%
+  rename("male" = 2, "female" = 3)
+```
+
+```{r warning=FALSE}
+# Convert age to numeric 
+merged_data <- merged_data %>%
+  mutate(age = as.numeric(as.character(age)))  
+
+new_data = merged_data %>%
+  mutate(age_group = cut(age, breaks = seq(20, 80, by = 5), right = FALSE))
+
+#Create a visualization of the age distributions for men and women in each education category
+ggplot(new_data, aes(x = age, fill = sex)) +
+  geom_density(alpha = 0.4) +
+  facet_wrap(~education) +
+  labs(
+    title = "Age Distribution by Education and Sex",
+    x = "Age",
+    y = "Density"
+  ) +
+  theme_minimal()
+```
+
+From the plot, it shows that the number of women would be much more than men to obtain education more than high school, especially for younger women from 20-40 years old. While for the people received education of high school or equivalent, younger women from 20-40 years old is more than men, but for men in 60-80 years old, there are more men than women. For people only received education less than high school, the number of women and men are mostly equivalent across all ages, except for women in 50 to 70 years old. 
+
+```{r}
+
+```
 
 
 ## R Markdown
