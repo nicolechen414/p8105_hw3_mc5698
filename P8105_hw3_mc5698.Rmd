@@ -102,7 +102,7 @@ ggplot(data = combined_tmax, aes(x = year, y = mean_tmax, color = month)) +
 
 ```{r}
 #Make a two-panel plot 
-p1 = ggplot(data_ny, aes(x = tmin, y = tmax)) +
+ggplot(data_ny, aes(x = tmin, y = tmax)) +
   geom_hex() +
   labs(
     title = "Plot of tmax vs tmin",
@@ -121,7 +121,7 @@ snowfall_data <- data_ny %>%
   group_by(year) %>%
   summarize(mean_snowfall = mean(snow, na.rm = TRUE), .groups = 'drop')
 
-p2 <- ggplot(snowfall_data, aes(x = year, y = mean_snowfall)) +
+ggplot(snowfall_data, aes(x = year, y = mean_snowfall)) +
   geom_point() + geom_line() +
   labs(
     title = "Distribution of Snowfall by Year",
@@ -134,7 +134,11 @@ p2 <- ggplot(snowfall_data, aes(x = year, y = mean_snowfall)) +
 
 #Problem 2
 ```{r}
-
+#Read and clean the datasets
+demographics =
+  read.csv("/Users/nicolechen/Downloads/p8105_hw3_mc5698/data/nhanes_covar.csv") %>%
+  filter("age" >= 21) %>%
+  drop_na()
 ```
 
 ## R Markdown
