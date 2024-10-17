@@ -5,6 +5,7 @@ date: "2024-10-09"
 ---
 
 ```{r setup, include=FALSE}
+# import necessary libraries
 library(tidyverse)
 library(ggridges)
 library(patchwork)
@@ -32,7 +33,7 @@ scale_fill_discrete = scale_fill_viridis_d
 
 #Problem 1
 ```{r}
-#Access to the dataset
+# read dataset
 data("ny_noaa")
 ```
 
@@ -57,7 +58,7 @@ snowfall= data_ny %>%
   arrange(desc(n))
 head(snowfall,10)
 ```
-For snowball,the most commonly observed values is 0, which means that most days are not snowy.There are some other common values such as 25, 13, 51 in unit of mm. 
+For snowfall,the most commonly observed values is 0, which means that most days are not snowy.There are some other common values such as 25, 13, 51 in unit of mm. 
 
 ```{r}
 #Make a two-panel plot showing the average max temperature in January and in July 
